@@ -171,6 +171,7 @@ header::after{
   box-shadow:var(--shadow);
 }
 .theme-btn:hover{border-color:var(--gold);transform:rotate(20deg);}
+.theme-btn.active-fs{border-color:var(--gold);color:var(--gold);}
 
 .font-ctrl{
   display:flex;align-items:center;gap:6px;
@@ -591,6 +592,7 @@ header::after{
     <span class="font-size-label" id="fontLabel">100%</span>
     <button class="font-btn" onclick="changeFont(1)" title="تكبير الخط">+A</button>
   </div>
+  <button class="theme-btn" id="fsBtn" onclick="toggleFullscreen()" title="ملء الشاشة">⛶</button>
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="تبديل المظهر (اضغط للتنقل بين الأوضاع)">🌙</button>
 </div>
 
@@ -1095,6 +1097,27 @@ function applyDefaultTab(){
 
 const themeOrder=['dark','light','emerald','sepia'];
 const themeIcons={dark:'☀️',light:'🌿',emerald:'📜',sepia:'🌙'};
+function toggleFullscreen(){
+  const el=document.documentElement;
+  const isFs=document.fullscreenElement||document.webkitFullscreenElement;
+  if(!isFs){
+    (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen).call(el)
+      .catch(()=>{});
+  }else{
+    (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen).call(document)
+      .catch(()=>{});
+  }
+}
+document.addEventListener('fullscreenchange',updateFsIcon);
+document.addEventListener('webkitfullscreenchange',updateFsIcon);
+function updateFsIcon(){
+  const btn=document.getElementById('fsBtn');
+  const isFs=document.fullscreenElement||document.webkitFullscreenElement;
+  if(btn) btn.textContent=isFs?'✕':'⛶';
+  if(btn) btn.title=isFs?'الخروج من ملء الشاشة':'ملء الشاشة';
+  if(btn) btn.classList.toggle('active-fs',!!isFs);
+}
+
 function toggleTheme(){
   const body=document.body;
   const cur=body.dataset.theme||'dark';
